@@ -1,17 +1,36 @@
 import React from "react";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { ErrorMessage } from "@hookform/error-message";
 import { Briefcase, Star, ArrowLeft } from "react-feather";
 
-import { P } from "../Typography";
+import { P, Error } from "../Typography";
 import { Input } from "../Input";
 import { Header } from "../Header";
-import pgr from "../../assets/pgr.png";
 import { Button } from "../Button";
+import pgr from "../../assets/pgr.png";
+
+const schema = yup.object().shape({
+  cardNumber: yup.string().length(16, "length should be 16 numbers").required(),
+  CardHolderName: yup.string().min(4, "name is too short").required(),
+  expireDate: yup
+    .string()
+    .length(5, "length should be 5 characters")
+    .required(),
+  cvv: yup.string().length(3, "length should be 3 numbers").required(),
+});
 
 const Label = ({ label }) => {
-  return <label className="font-semibold">{label}</label>;
+  return <label className="font-semibold mb-2">{label}</label>;
 };
 
 const Checkout = ({ handleClick }) => {
+  const { register, errors } = useForm({
+    resolver: yupResolver(schema),
+    mode: "all",
+  });
+
   return (
     <div className="mx-8">
       <div>
@@ -31,18 +50,42 @@ const Checkout = ({ handleClick }) => {
         <Briefcase size="20" />
       </Header>
       <div>
-        <Label label="Credit Card Number" />
-        <Input.Secondary type="text" className="mb-4" />
-        <Label label="Card Holder Name" />
-        <Input.Secondary type="text" className="mb-4" />
+        <div className="my-6">
+          <Label label="Credit Card Number" />
+          <Input.Secondary type="number" name="cardNumber" ref={register} />
+          <ErrorMessage
+            errors={errors}
+            name="cardNumber"
+            render={({ message }) => <Error text={message} />}
+          />
+        </div>
+        <div className="my-6">
+          <Label label="Card Holder Name" />
+          <Input.Secondary type="text" name="CardHolderName" ref={register} />
+          <ErrorMessage
+            errors={errors}
+            name="CardHolderName"
+            render={({ message }) => <Error text={message} />}
+          />
+        </div>
         <div className="flex mb-4">
           <div className="w-full">
             <Label label="Expiry date" />
-            <Input.Secondary type="text" />
+            <Input.Secondary type="text" name="expireDate" ref={register} />
+            <ErrorMessage
+              errors={errors}
+              name="expireDate"
+              render={({ message }) => <Error text={message} />}
+            />
           </div>
           <div className="w-full ml-4">
             <Label label="CVV" />
-            <Input.Secondary type="text" />
+            <Input.Secondary type="number" name="cvv" ref={register} />
+            <ErrorMessage
+              errors={errors}
+              name="cvv"
+              render={({ message }) => <Error text={message} />}
+            />
           </div>
         </div>
       </div>
@@ -79,6 +122,7 @@ const Checkout = ({ handleClick }) => {
           Complete purchase
         </Button.Primary>
       </div>
+      {console.log("errors", errors)}
     </div>
   );
 };

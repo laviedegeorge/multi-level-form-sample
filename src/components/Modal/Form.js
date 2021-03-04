@@ -10,15 +10,18 @@ import {
   ThumbsUp,
   Calendar,
 } from "react-feather";
+import { useFormContext } from "react-hook-form";
+import { ErrorMessage } from "@hookform/error-message";
 
 import Nav from "./Nav";
 import Card from "./Card";
 import { Input } from "../Input";
 import { Circle } from "../Circle";
 import { Button } from "../Button";
-import { Heading, P } from "../Typography";
+import { Heading, P, Error } from "../Typography";
 
 const Form = ({ handleClick }) => {
+  const { register, unregister, watch, setValue, errors } = useFormContext();
   const [counter, setCounter] = React.useState(0);
   const [heightArr, setHeightArr] = React.useState([]);
 
@@ -69,6 +72,17 @@ const Form = ({ handleClick }) => {
     console.log(heightArr[count], count);
   };
 
+  React.useEffect(() => {
+    register("insuranceType", { required: true });
+    register("design", { required: true });
+    register("buildingCoverage", { required: true });
+    return () => {
+      unregister("insuranceType");
+      unregister("design");
+      unregister("buildingCoverage");
+    };
+  }, [register, unregister]);
+
   return (
     <div className="relative">
       <div
@@ -92,22 +106,54 @@ const Form = ({ handleClick }) => {
               <Card
                 header="Professional Liability"
                 text="Erros & Omissions (E&O insurance)"
+                active={watch("insuranceType") === "professional-liability"}
+                onClick={() => {
+                  setValue("insuranceType", "professional-liability");
+                  setTimeout(() => {
+                    switchStage("down");
+                  }, 500);
+                }}
               >
                 <Briefcase size="20" />
               </Card>
               <Card
                 header="General Liability"
                 text="Help mitigate against loss (CGL insurance)"
+                active={watch("insuranceType") === "general-liability"}
+                onClick={() => {
+                  setValue("insuranceType", "general-liability");
+                  setTimeout(() => {
+                    switchStage("down");
+                  }, 500);
+                }}
               >
                 <CloudRain size="20" />
               </Card>
               <Card
                 header="Business Owner’s Policy"
                 text="The complete package (BOP)"
+                active={watch("insuranceType") === "business-liability"}
+                onClick={() => {
+                  setValue("insuranceType", "business-liability");
+                  setTimeout(() => {
+                    switchStage("down");
+                  }, 500);
+                }}
               >
                 <Package size="20" />
               </Card>
-              <Card header="Cyber" text="Internet-bsed risks (CLIC)">
+              {console.log(watch("insuranceType"))}
+              <Card
+                header="Cyber"
+                text="Internet-bsed risks (CLIC)"
+                active={watch("insuranceType") === "cyber"}
+                onClick={() => {
+                  setValue("insuranceType", "cyber");
+                  setTimeout(() => {
+                    switchStage("down");
+                  }, 500);
+                }}
+              >
                 <Wifi size="20" />
               </Card>
             </div>
@@ -128,9 +174,17 @@ const Form = ({ handleClick }) => {
               <Heading text="What’s the name of your business?" />
             </div>
             <div className="flex flex-col">
-              <Input type="text" />
+              <Input type="text" name="businessName" ref={register} />
+              <ErrorMessage
+                errors={errors}
+                name="businessName"
+                render={({ message }) => <Error text={message} />}
+              />
               <div>
-                <Button.Secondary className=" flex items-center flex-grow-0 mt-6">
+                <Button.Secondary
+                  className=" flex items-center flex-grow-0 mt-6"
+                  onClick={() => switchStage("down")}
+                >
                   OK <Check size="18" className="ml-2" />
                 </Button.Secondary>
               </div>
@@ -146,9 +200,17 @@ const Form = ({ handleClick }) => {
               <Heading text="What’s the Address of your business?" />
             </div>
             <div className="flex flex-col">
-              <Input type="text" />
+              <Input type="text" name="address" ref={register} />
+              <ErrorMessage
+                errors={errors}
+                name="address"
+                render={({ message }) => <Error text={message} />}
+              />
               <div>
-                <Button.Secondary className=" flex items-center flex-grow-0 mt-6">
+                <Button.Secondary
+                  className=" flex items-center flex-grow-0 mt-6"
+                  onClick={() => switchStage("down")}
+                >
                   OK <Check size="18" className="ml-2" />
                 </Button.Secondary>
               </div>
@@ -164,9 +226,17 @@ const Form = ({ handleClick }) => {
               <Heading text="What’s the Phone number of your business?" />
             </div>
             <div className="flex flex-col">
-              <Input type="text" />
+              <Input type="text" name="phoneNumber" ref={register} />
+              <ErrorMessage
+                errors={errors}
+                name="phoneNumber"
+                render={({ message }) => <Error text={message} />}
+              />
               <div>
-                <Button.Secondary className=" flex items-center flex-grow-0 mt-6">
+                <Button.Secondary
+                  className=" flex items-center flex-grow-0 mt-6"
+                  onClick={() => switchStage("down")}
+                >
                   OK <Check size="18" className="ml-2" />
                 </Button.Secondary>
               </div>
@@ -191,10 +261,30 @@ const Form = ({ handleClick }) => {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card header="Yes" text="We do designs in-house">
+              <Card
+                header="Yes"
+                text="We do designs in-house"
+                active={watch("design") === "yes"}
+                onClick={() => {
+                  setValue("design", "yes");
+                  setTimeout(() => {
+                    switchStage("down");
+                  }, 500);
+                }}
+              >
                 <Droplet size="20" />
               </Card>
-              <Card header="No" text="We’re gonna need some assistance">
+              <Card
+                header="No"
+                text="We’re gonna need some assistance"
+                active={watch("design") === "no"}
+                onClick={() => {
+                  setValue("design", "no");
+                  setTimeout(() => {
+                    switchStage("down");
+                  }, 500);
+                }}
+              >
                 <CloudRain size="20" />
               </Card>
             </div>
@@ -208,7 +298,7 @@ const Form = ({ handleClick }) => {
               <Circle.Number className="mr-4">6</Circle.Number>
               <div>
                 <Heading
-                  text="Do you do your own design?"
+                  text="Include building coverage?"
                   className="mb-0 mt-0"
                 />
                 <P
@@ -218,10 +308,30 @@ const Form = ({ handleClick }) => {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card header="Yes" text="We do designs in-house">
+              <Card
+                header="Yes"
+                text="We do designs in-house"
+                active={watch("buildingCoverage") === "yes"}
+                onClick={() => {
+                  setValue("buildingCoverage", "yes");
+                  setTimeout(() => {
+                    switchStage("down");
+                  }, 500);
+                }}
+              >
                 <ThumbsUp size="20" />
               </Card>
-              <Card header="No" text="We’re gonna need some assistance">
+              <Card
+                header="No"
+                text="We’re gonna need some assistance"
+                active={watch("buildingCoverage") === "no"}
+                onClick={() => {
+                  setValue("buildingCoverage", "no");
+                  setTimeout(() => {
+                    switchStage("down");
+                  }, 500);
+                }}
+              >
                 <ThumbsDown size="20" />
               </Card>
             </div>
@@ -238,13 +348,22 @@ const Form = ({ handleClick }) => {
             <div className="">
               <div className="w-full md:w-1/2">
                 <div className="flex items-end">
-                  <Input type="date" className="w-full mr-2" />
+                  <Input
+                    type="date"
+                    className="w-full mr-2"
+                    name="businessDOB"
+                    ref={register}
+                  />
                   <Calendar className="text-primary" />
                 </div>
+                <ErrorMessage
+                  errors={errors}
+                  name="businessDOB"
+                  render={({ message }) => <Error text={message} />}
+                />
                 <Button.Primary
                   className="w-full my-4"
                   onClick={() => {
-                    console.log("clickd");
                     handleClick(200);
                   }}
                 >

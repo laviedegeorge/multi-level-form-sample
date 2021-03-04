@@ -11,3 +11,7 @@ export const Heading = ({ text, className }) => {
 export const P = ({ text, className }) => {
   return <p className={` text-_1 ${className}`}>{text}</p>;
 };
+
+export const Error = ({ text }) => {
+  return <p className="text-sm text-red-500">{text}</p>;
+};
